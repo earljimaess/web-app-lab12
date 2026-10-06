@@ -1,0 +1,29 @@
+name: Production Integration & Delivery Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js Runtime
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Run Automated Test Suite
+      run: npx jest --ci
+
+    - name: Build Docker Image
+      run: docker build -t web-app-lab12:${{ github.sha }} .
